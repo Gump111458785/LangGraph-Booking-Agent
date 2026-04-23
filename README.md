@@ -74,7 +74,7 @@ export OPENAI_API_KEY="your-api-key-here"
 ```
 
 ### 3. 启动应用
-在 trip_assistant 根目录下运行：
+在 `trip_assistant` 根目录下运行：
 
 ```Bash
 streamlit run app.py
