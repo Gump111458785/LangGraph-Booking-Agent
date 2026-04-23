@@ -63,7 +63,7 @@ pip install streamlit langchain langchain-openai langgraph pandas openpyxl
 ```
 
 ### 2. 配置 API Key
-确保您的环境变量中已配置大模型 API 密钥（如 OpenAI 或 ZhipuAI）：
+确保您的环境变量中已配置大模型 `API` 密钥（如 `OpenAI` 或 `ZhipuAI`）：
 
 ```Bash
 # Windows (PowerShell)
