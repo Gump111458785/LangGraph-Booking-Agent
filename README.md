@@ -79,3 +79,7 @@ export OPENAI_API_KEY="your-api-key-here"
 ```Bash
 streamlit run app.py
 ```
+
+## 后续规划
+- 接入微信，实现消息通知与提醒（较易）
+- 跳出本地数据库限制，实现携程软件api接口调用与订票服务（较难）
