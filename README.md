@@ -1,5 +1,4 @@
 # 携程多智能体旅行助手 LangGraph-Booking-Agent
-<img width="1860" height="1956" alt="41f17b699dadd2b9786f59ee896a404c" src="https://github.com/user-attachments/assets/fe47182a-176b-42f0-89f5-c5de283c7d2d" />
 这是一个基于 **LangGraph** 和 **Streamlit** 构建的生产级智能旅行大管家。系统不仅能处理复杂的自然语言查询，还能通过多个专业 Agent（机票、酒店、租车、游览）的协同工作来完成真实业务，并具备关键动作的**安全拦截与人工审批**功能。
 
 ---
