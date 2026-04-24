@@ -15,6 +15,9 @@
 ### 航班订购服务
 <img width="1860" height="1561" alt="60ea058603195e48706a7ef8dc025596" src="https://github.com/user-attachments/assets/bb1ff661-3a78-47af-a4d6-bd8e3918cd18" />
 
+### 人性化搜索服务
+<img width="1860" height="3107" alt="7a8d825ba5c5513ed0a0437283eae87d" src="https://github.com/user-attachments/assets/8b8f02d6-c51a-497c-ba15-70b92ff3f7dc" />
+
 ---
 ## 核心特性
 
