@@ -16,9 +16,10 @@ docs = [{"page_content": txt} for txt in re.split(r"(?=\n##)", faq_text)]
 #     api_key="4afc2ced3f174bc89dd17b3e47d2586d.qqcyAW2zEEqj5rY3",
 # )
 
-embeddings_model = OpenAIEmbeddings(
-    openai_api_key="sk-doD81WgxSoF9A6xYzhgW7GUh5frRwPETI8mDq3ce4UaWnCPF",
-    openai_api_base="https://xiaoai.plus/v1"
+# 启用智谱 Embedding
+embeddings_model = ZhipuAIEmbeddings(
+    model="embedding-3",
+    api_key="b374b117d466431fa15b21e837240ea2.emOwG9zkQ7DYzDPL",  # ← 换成你的真实 Key
 )
 
 

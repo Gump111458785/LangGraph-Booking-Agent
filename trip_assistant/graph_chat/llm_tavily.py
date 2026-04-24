@@ -5,7 +5,7 @@
 #     api_key="sk-23308eef770c47e9aeb1149038ffb243",
 #     base_url="https://api.deepseek.com")
 import os
-
+from langchain_community.chat_models import ChatZhipuAI
 from langchain_community.tools import TavilySearchResults
 from langchain_openai import ChatOpenAI
 
@@ -30,13 +30,13 @@ from langchain_openai import ChatOpenAI
 #     api_key="sk-doD81WgxSoF9A6xYzhgW7GUh5frRwPETI8mDq3ce4UaWnCPF",
 #     base_url="https://xiaoai.plus/v1")
 
-llm = ChatOpenAI(  # openai的
+llm = ChatZhipuAI(
     temperature=0,
-    model='claude-3-7-sonnet-20250219',
-    api_key="sk-doD81WgxSoF9A6xYzhgW7GUh5frRwPETI8mDq3ce4UaWnCPF",
-    base_url="https://xiaoai.plus/v1")
+    model="glm-4",  # 或 "glm-4-plus", "glm-4-flash"
+    api_key="b374b117d466431fa15b21e837240ea2.emOwG9zkQ7DYzDPL",
+)
 
 
 # 初始化搜索工具，限制结果数量为2
-os.environ["TAVILY_API_KEY"] = "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"
+os.environ["TAVILY_API_KEY"] = "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"
 tavily_tool = TavilySearchResults(max_results=1)

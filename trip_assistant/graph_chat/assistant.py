@@ -16,44 +16,37 @@ from tools.flights_tools import fetch_user_flight_information, search_flights, u
 from tools.hotels_tools import search_hotels, book_hotel, update_hotel, cancel_hotel
 from tools.retriever_vector import lookup_policy
 from tools.trip_tools import search_trip_recommendations, book_excursion, update_excursion, cancel_excursion
-
+from langchain_core.runnables import RunnableSerializable, RunnableConfig
+# 确保文件里也有这个导入，如果没有请加上：
+from datetime import datetime
+from tools.web_tools import web_search
 
 class CtripAssistant:
-
-    # 自定义一个类，表示流程图的一个节点（复杂的）
-
-    def __init__(self, runnable: Runnable):
-        """
-        初始化助手的实例。
-        :param runnable: 可以运行对象，通常是一个Runnable类型的
-        """
+    def __init__(self, runnable: RunnableSerializable):
         self.runnable = runnable
 
     def __call__(self, state: State, config: RunnableConfig):
-        """
-        调用节点，执行助手任务
-        :param state: 当前工作流的状态
-        :param config: 配置: 里面有旅客的信息
-        :return:
-        """
-        while True:
-            # 创建了一个无限循环，它将一直执行直到：从 self.runnable 获取的结果是有效的。
-            # 如果结果无效（例如，没有工具调用且内容为空或内容不符合预期格式），循环将继续执行，
-            # configuration = config.get('configurable', {})
-            # user_id = configuration.get('passenger_id', None)
-            # state = {**state, 'user_info': user_id}  # 从配置中得到旅客的ID，也追加到state
-            result = self.runnable.invoke(state)
-            # 如果，runnable执行完后，没有得到一个实际的输出
-            if not result.tool_calls and (  # 如果结果中没有工具调用，并且内容为空或内容列表的第一个元素没有"text"，则需要重新提示用户输入。
-                    not result.content
-                    or isinstance(result.content, list)
-                    and not result.content[0].get("text")
+        # 🌟 修改点：只允许重试 3 次，防止死循环把 API 刷爆
+        max_retries = 3
+        while max_retries > 0:
+            result = self.runnable.invoke(state, config)
+            
+            # 如果 AI 既没说话也没调工具，通常是模型幻觉或报错了
+            if not result.tool_calls and (
+                not result.content
+                or (isinstance(result.content, list) and not result.content[0].get("text"))
             ):
                 messages = state["messages"] + [("user", "请提供一个真实的输出作为回应。")]
                 state = {**state, "messages": messages}
-            else:  # 如果： runnable执行后已经得到，想要的输出，则退出循环
+                max_retries -= 1  # 消耗一次机会
+            else:
                 break
-        return {'messages': result}
+        
+        if max_retries == 0:
+            # 如果试了3次都不行，强行返回一个提示，避免系统崩溃
+            return {"messages": [("assistant", "抱歉，系统处理出现异常，请稍后再试。")]}
+            
+        return {"messages": result}
 
 
 
@@ -63,6 +56,7 @@ primary_assistant_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             "您是携程瑞士航空公司的客户服务助理。"
+            "如果用户询问天气、旅游攻略、新闻等外部实时信息，请直接调用 web_search 工具解答。"
             "您的主要职责是搜索航班信息和公司政策以回答客户的查询。"
             "如果客户请求更新或取消航班、预订租车、预订酒店或获取旅行推荐，请通过调用相应的工具将任务委派给合适的专门助理。您自己无法进行这些类型的更改。"
             "只有专门助理才有权限为用户执行这些操作。"
@@ -70,7 +64,7 @@ primary_assistant_prompt = ChatPromptTemplate.from_messages(
             "向客户提供详细的信息，并且在确定信息不可用之前总是复查数据库。"
             "在搜索时，请坚持不懈。如果第一次搜索没有结果，请扩大查询范围。"
             "如果搜索无果，请扩大搜索范围后再放弃。"
-            "\n\n当前用户的航班信息:\n<Flights>\n{user_info}\n</Fllights>"
+            "\n\n当前用户的航班信息:\n<Flights>\n{user_info}\n</Flights>"
             "\n当前时间: {time}.",
         ),
         ("placeholder", "{messages}"),
@@ -82,6 +76,7 @@ primary_assistant_tools = [
     tavily_tool,  # 假设TavilySearchResults是一个有效的搜索工具
     search_flights,  # 搜索航班的工具
     lookup_policy,  # 查找公司政策的工具
+    web_search,
 ]
 
 # 创建可运行对象，绑定主助理提示模板和工具集，包括委派给专门助理的工具
